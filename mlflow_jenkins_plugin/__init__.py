@@ -20,9 +20,14 @@ class PluginSqlAlchemyStore(SqlAlchemyStore):
                 jenkins_token is not None and jenkins_action is not None:
             mlflow_model_url = self.get_model_version_download_uri(
                 name, version)
+            mlflow_model_previous_stage = self.get_model_version(
+                name, version).current_stage
 
-            params = {"ACTION": jenkins_action, "MODEL_NAME": name, "MODEL_VERSION": version,
-                      "MODEL_STAGE": stage, "MODEL_URL": mlflow_model_url}
+            params = {
+                "ACTION": jenkins_action, "MODEL_NAME": name, "MODEL_VERSION": version,
+                "MODEL_CURRENT_STAGE": stage, "MODEL_PREVIOUS_STAGE": mlflow_model_previous_stage,
+                "MODEL_URL": mlflow_model_url
+            }
             requests.post(jenkins_callback_url, params=params,
                           auth=(jenkins_user, jenkins_token), verify=False)
 
